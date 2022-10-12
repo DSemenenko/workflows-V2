@@ -1,0 +1,8 @@
+{
+    "commandslist": {
+        "start": "/start - Start Bot",
+        "workflows": "/workflows - Your Activity",
+        "help": "/help - Help desk/Info"
+    }
+}
+ 
