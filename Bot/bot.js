@@ -1,8 +1,42 @@
 const {Telegraf, Markup} = require('telegraf');
-require('dotenv')
+const Koa = require('koa');
+const Router = require('koa-router');
+const koaBody = require('koa-body')
+
+
 const bot = new Telegraf('5460764354:AAFJq8j0DDivRJABpBGBjYq2BJqcyg7gInc');
-const fs = require('fs');
-require('dotenv').config();
+bot.telegram.setWebhook(`https://edda-91-72-172-198.in.ngrok.io`)
+bot.startWebhook(`/`, null, 3000);
+
+const app = new Koa()
+app.use(koaBody())
+// app.use(async (ctx, next) => {
+//   if (ctx.method !== 'POST' || ctx.url !== '/secret-path') {
+//     return next()
+//   }
+  
+//   await bot.handleUpdate(ctx.request.body, ctx.response)
+//   ctx.status = 200
+//   console.log(ctx.request.body[0].name)
+//   const name = ctx.request.body[0].name
+//   const from = ctx.request.body[0].from
+//   const to = ctx.request.body[0].to
+//   const duration = ctx.request.body[0].duration
+//   const status = ctx.request.body[0].status
+  
+//   ctx.reply = bot.telegram.sendMessage(5591115278, `Leave request of ${name}; From ${from} to ${to}, has been ${status} DURATION: ${duration}.`)
+// })
+
+
+
+// bot.use((ctx) => {
+//     console.log(ctx.message)
+// })
+
+
+// bot.message(async (ctx) => {
+//     ctx.reply('Это будет тест')
+//   })
 
 const startDesc = `
 |
@@ -55,46 +89,96 @@ bot.command('leaverequest', async (ctx) => {
 
 
 bot.command('test', async (ctx) => {
-    await ctx.reply('test')
-    console.log(ctx.message.chat.id)
+    await ctx.reply('this is test', Markup.inlineKeyboard([
+        Markup.button.callback('accept', 'accept'),
+        Markup.button.callback('reject', 'reject')
+    ]))
+    const delete_btn_id = ctx.message.message_id
+    console.log(ctx.message.message_id)
 })
+
+
 
 // if(ctx.message.chat.id = 5591115278){
 //     console.log("true")
 // }
-
-bot.telegram.setWebhook('https://workflow.axcap.ae/');
-bot.startWebhook(`/`, null, 4000);
-
-
-
-bot.use(function(ctx, next){
-    try{
-        if(ctx.chat == undefined) return;
-        console.log("Hello World");
-    }catch (e){
-        console.log("Error");
-    }
-});
-
 
 
 bot.help((ctx) => {
     ctx.reply('I will send you your Workflows, Activity Stream and Updates about your requests \n\nWorkflows - The place where you can requests different thins(Sick Leave, Vacation, Book a car and etc) \n\nWeb version https://crm.axcap.ae/stream/')
 })
 
+// app.use(async (ctx) => {
+//     // ctx.body = "Hello world"
+//     console.log(ctx.request.body.callback_query);
+//     console.log('используется')
+//     const data = ctx.request.body.callback_query.message.text
+    
+//     ctx.reply = bot.telegram.sendMessage(5591115278, `${data}`)
+// })
 
-bot.on('message', (ctx) => {
-    ctx.telegram.copyMessage(ctx.message.chat.id, ctx.message.from.id, ctx.message.message_id);
+bot.use(function(ctx, next){
+        // if(ctx.chat == undefined) return;
+        // console.log("Hello World");
+
+        // let data;
+        // let message_id;
+
+        // if(ctx.message.message_id !== undefined){
+        //     message_id = ctx.message.message_id
+        // }
+        // console.log('message_id', message_id)
+        // console.log("Action data", ctx)
+        // if (ctx.request !== undefined) {
+        //     data = ctx.request.body.callback_query.message.text;
+        //     console.log(data);
+        //     ctx.reply = bot.telegram.sendMessage(5591115278, `${data}`)
+        // } else {
+        //     console.log('empty')
+        // }
+
+        
+        next();
+        
+        //bot.telegram.sendMessage(5591115278, 'hey');
+        
+        let call_data = ctx.update.callback_query.data.split(':');
+
+        let message_id = ctx.message.message_id
+
+        let from_id = ctx.message.from.id
+
+        console.log('message_id', message_id)
+        console.log('from_id', from_id)
+
+        console.log('тесты', call_data[2]); 
+
+        if(call_data !== 0){
+            ctx.editMessageReplyMarkup();
+            ctx.reply('leave has been accepted 🟢🟢🟢')
+        }else if(call_data !== 1){
+            ctx.reply = bot.telegram.sendMessage(5591115278, 'rejected');
+        }
+
 });
- 
-const tlsOptions = {
-    key: fs.readFileSync('/etc/ssl/private/private-nodejs.key'),
-    cert: fs.readFileSync('/etc/ssl/certs/public-nodejs.pem')
-};
+
+
+bot.action('1', async(ctx) => {
+    await ctx.answerCbQuery();
+    ctx.reply('leave has been accepted 🟢🟢🟢')
+    console.log(ctx)
+})
+
+bot.action('0', async(ctx) => {
+    await ctx.answerCbQuery();
+    ctx.editMessageReplyMarkup();
+    ctx.reply('leave has been rejected 🛑🛑🛑')
+    console.log(ctx)
+})
  
 // bot.telegram.setWebhook(`https://185.251.90.198:8443/bot`, {
 //     source: `public-nodejs.pem`
 // });
  
-bot.startWebhook(`/bot`, tlsOptions, 8443);
+bot.launch();
+//app.listen(3000, () => console.log("Listening on port", 3000));
