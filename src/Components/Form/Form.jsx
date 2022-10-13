@@ -40,7 +40,7 @@ const Form = () => {
         Object.assign(data, {"IBLOCK_ID": 146})
         //Object.assign(data, {"IBLOCK_CODE": 146})
         Object.assign(data, {"IBLOCK_TYPE_ID": "bitrix_processes"})
-        Object.assign(data, {"ELEMENT_CODE": 1241235124})
+        Object.assign(data, {"ELEMENT_CODE": Date.now()})
         Object.assign(data.fields, {"CREATED_BY": 82407})
         Object.assign(data.fields, {"NAME": "LEAVE REQUEST"})
         Object.assign(data.fields, {"PROPERTY_656": 6334})
