@@ -137,44 +137,47 @@ bot.use(function(ctx, next){
         //     console.log('empty')
         // }
 
+        console.log(ctx.update.callback_query.message.reply_markup)
         
         next();
         
         //bot.telegram.sendMessage(5591115278, 'hey');
-        
-        let call_data = ctx.update.callback_query.data.split(':');
+        let call_data;
 
-        let message_id = ctx.message.message_id
-
-        let from_id = ctx.message.from.id
-
-        console.log('message_id', message_id)
-        console.log('from_id', from_id)
-
+        if (ctx.update.callback_query !== undefined) {
+            call_data = ctx.update.callback_query.data.split(':');
+        } else {
+            return
+        }
         console.log('тесты', call_data[2]); 
 
-        if(call_data !== 0){
+        if(call_data[2] !== '0'){
             ctx.editMessageReplyMarkup();
-            ctx.reply('leave has been accepted 🟢🟢🟢')
-        }else if(call_data !== 1){
-            ctx.reply = bot.telegram.sendMessage(5591115278, 'rejected');
+            ctx.editMessageText(ctx.update.callback_query.message.text + '\nLeave request has been accepted 🟢🟢🟢')
+        }else if(call_data[2] !== '1'){
+            ctx.editMessageReplyMarkup();
+            ctx.editMessageText(ctx.update.callback_query.message.text + '\nleave request has been rejected 🛑🛑🛑')
+        }else{
+            return;
         }
+        
+
 
 });
 
 
-bot.action('1', async(ctx) => {
-    await ctx.answerCbQuery();
-    ctx.reply('leave has been accepted 🟢🟢🟢')
-    console.log(ctx)
-})
+// bot.action('1', async(ctx) => {
+//     await ctx.answerCbQuery();
+//     ctx.reply('leave has been accepted 🟢🟢🟢')
+//     console.log(ctx)
+// })
 
-bot.action('0', async(ctx) => {
-    await ctx.answerCbQuery();
-    ctx.editMessageReplyMarkup();
-    ctx.reply('leave has been rejected 🛑🛑🛑')
-    console.log(ctx)
-})
+// bot.action('0', async(ctx) => {
+//     await ctx.answerCbQuery();
+//     ctx.editMessageReplyMarkup();
+//     ctx.reply('leave has been rejected 🛑🛑🛑')
+//     console.log(ctx)
+// })
  
 // bot.telegram.setWebhook(`https://185.251.90.198:8443/bot`, {
 //     source: `public-nodejs.pem`

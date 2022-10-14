@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { useForm } from "react-hook-form";
 import "./Form.css"
 import Axios from 'axios';
@@ -34,6 +34,7 @@ const Form = () => {
     // data.append('FIELDS[PROPERTY_657]', '6338');
     // data.append('FIELDS[PROPERTY_656]', '6334');
 
+    const[notify, setNotify] = useState('');
 
     const onSubmit = data => {
         
@@ -44,7 +45,21 @@ const Form = () => {
         Object.assign(data.fields, {"CREATED_BY": 82407})
         Object.assign(data.fields, {"NAME": "LEAVE REQUEST"})
         Object.assign(data.fields, {"PROPERTY_656": 6334})
-        console.log('до отправки', data)
+
+
+        //вытаскиваем регистры
+        data.fields.PROPERTY_653 = data.fromDate;
+        data.fields.PROPERTY_654 = data.toDate;
+        data.fields.PROPERTY_657 = data.absence;
+        // data.fields.PREVIEW_TEXT = data.notes;
+
+        delete data.fromDate
+        delete data.toDate
+        delete data.absence
+        //delete data.notes
+
+
+        //console.log('до отправки', data)
         Axios.post('https://crm.axcap.ae/rest/1/y9x9q1wmj1mwq5bu/lists.element.add', 
             data
         )
@@ -54,13 +69,20 @@ const Form = () => {
         .catch(function (error){
             console.log(error)
         });
-
+        setNotify(<p className="p-2">-- LEAVE REQUEST HAS BEEN SENT --</p>);
         reset();
-        console.log(data)
+        //console.log(data)
     };
     
 
-
+    const disablePastDate = () => {
+        var today,dd,mm,yyyy;
+        today = new Date();
+        dd = String(today.getDate() + 1).padStart(2, "0");
+        mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+        yyyy = today.getFullYear();
+        return yyyy + "-" + mm + "-" + dd;
+    };
 
     return( 
         <div className="container-fluid">
@@ -75,25 +97,26 @@ const Form = () => {
                         <div className="mb-3">
                             <label htmlFor="from" className="form-label">From:</label>
                             <input 
-                                {...register("fields[PROPERTY_653]", {required: true})} 
-                                type="date" className={`form-control ${errors.PROPERTY_653 && 'is-invalid'}`} id="from" 
-                                placeholder="name@example.com" />
-                            {errors.PROPERTY_653 && <span className="invalid-feedback">This field is required</span>}
+                                min={disablePastDate()}
+                                {...register("fromDate", {required: true})} 
+                                type="date" className={`form-control ${errors.fromDate && 'is-invalid'}`} id="from" />
+                            {errors.fromDate && <span className="invalid-feedback">This field is required</span>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="To" className="form-label">To:</label>
                             <input 
-                                {...register("fields[PROPERTY_654]", {required: true})}
-                                type="date" className={`form-control  ${errors.PROPERTY_654 && "is-invalid"}`} id="To" 
+                                min={disablePastDate()}
+                                {...register("toDate", {required: true})}
+                                type="date" className={`form-control  ${errors.toDate && "is-invalid"}`} id="To" 
                                 placeholder="name@example.com" />
-                            {errors.PROPERTY_654 && <span className="invalid-feedback">This field is required</span>}
+                            {errors.toDate && <span className="invalid-feedback">This field is required</span>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="reason" className="form-label">Absence type:</label>
                             <select 
-                                {...register('fields[PROPERTY_657]', {required: true})}
+                                {...register('absence', {required: true})}
                                 id="reason"
-                                className={`form-select ${errors.PROPERTY_657 && "is-invalid"}`} aria-label="Default select example">
+                                className={`form-select ${errors.absence && "is-invalid"}`} aria-label="Default select example">
                                 <option value="">--Choose the reason--</option>
                                 <option value="6337">Absent without reason</option>
                                 <option value="6338">Annual leave</option>
@@ -103,7 +126,7 @@ const Form = () => {
                                 <option value="6342">Personal Calendars</option>
                                 <option value="6343">Other</option>
                             </select>
-                            {errors.PROPERTY_657 && <span className="invalid-feedback">This field is required</span>}
+                            {errors.absence && <span className="invalid-feedback">This field is required</span>}
                         </div>
                         <div className="mb-3">
                             <label htmlFor="exampleFormControlTextarea1" className="form-label">Notes:</label>
@@ -111,17 +134,23 @@ const Form = () => {
                                 {...register('fields[PREVIEW_TEXT]', {required: true})}
                                 className={`form-control ${errors.PREVIEW_TEXT && "is-invalid"}`} 
                                 id="exampleFormControlTextarea1" 
-                                rows="3"></textarea>
+                                placeholder="This field is required"
+                                rows="3"/>
                                 {errors.PREVIEW_TEXT && <span className="invalid-feedback">This field is required</span>}
                         </div>
                         {/* <div className="mb-3">
-                            <label htmlFor="formFileMultiple" className="form-label">Documents</label>
-                            <input 
-                                {...register('docFile', {required: false})}
-                                className="form-control" 
-                                type="file" id="formFileMultiple" multiple/>
+                            <label htmlFor="PROPERTY_658" className="form-label">Documents:</label>
+                            <div className="input-group">
+                                <input {...register("document")} type="file" className="form-control" id="inputGroupFile02"/>
+                                <label className="input-group-text" style={{color: "#a25d41"}} htmlFor="inputGroupFile02">Upload</label>
+                            </div>
                         </div> */}
-                         <input type="submit" className="btn btn-primary" />
+                        <div className="bg-success text-white mb-3 rounded">
+                            <div className="text-center">
+                                {notify}
+                            </div>
+                        </div>
+                         <input type="submit" className="btn btn-danger planned" />
                     </form>
                 </div>
             </div>
