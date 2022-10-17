@@ -88,8 +88,8 @@ bot.command('leaverequest', async (ctx) => {
     await ctx.reply(seackLeave, Markup.inlineKeyboard([
         [Markup.button.webApp('Open CRM', 'https://workflow.axcap.ae/')],
     ]))
-    const leavefromuser = ctx.update.message.from.id;
-    console.log('ID на leave', leavefromuser)
+    // const leavefromuser = ctx.update.message.from.id;
+    // console.log('ID на leave', leavefromuser)
 })
 
 
@@ -151,6 +151,7 @@ bot.use(function(ctx, next){
 
         //получаем и разделяем данные 
         if (ctx.update.callback_query !== undefined) {
+            console.log(ctx.update.callback_query.data)
             call_data = ctx.update.callback_query.data.split(':');
         } else {
             return
@@ -161,12 +162,12 @@ bot.use(function(ctx, next){
         const ed_mess = ctx.update.callback_query.message.from.id
         const ed_text = ctx.update.callback_query.message.text
 
-        console.log(ctx.update)
+        console.log(ctx.update.callback_query.message.from)
 
         if(call_data[2] !== '0'){
             ctx.editMessageReplyMarkup();
             ctx.editMessageText(ed_text + '\nLeave request has been accepted 🟢🟢🟢')
-            ctx.reply = bot.telegram.sendMessage(chatIdTelegram, `\nYour leave has been accepted`)
+            ctx.reply = bot.telegram.sendMessage(154679895, `\nYour leave has been accepted`)
         }else if(call_data[2] !== '1'){
             ctx.editMessageReplyMarkup();
             ctx.editMessageText(ed_text + '\nleave request has been rejected 🛑🛑🛑')

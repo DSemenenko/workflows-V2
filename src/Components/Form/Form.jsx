@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { useForm } from "react-hook-form";
 import "./Form.css"
 import Axios from 'axios';
@@ -36,11 +36,26 @@ const Form = () => {
 
     const[notify, setNotify] = useState('');
 
+
+    
+
+    //Тащим id из crm 
+    // const crmId = "https://crm.axcap.ae/local/webhooks/get_user_by_tid.php?api_key=eLag57bO84&tid=" + chatIdTelegram;
+
+    // const responseCrmId = Axios.get(crmId);
+    // console.log('CRM id ====', responseCrmId)
+    
+
     const onSubmit = data => {
 
+
+
+        //Тащим айди
         const tele_id = window.Telegram.WebApp;
-        const chatIdTelegram = tele_id.initDataUnsafe.user.id;
-        console.log('Telegram ID из сабмит.......', chatIdTelegram); 
+        const chatIdTelegram = 5591115278; //tele_id.initDataUnsafe.user.id
+        //console.log('Telegram ID из сабмит.......', chatIdTelegram); 
+
+        Object.assign(data, {"chatIdTelegram": chatIdTelegram})
         
         Object.assign(data, {"IBLOCK_ID": 146})
         //Object.assign(data, {"IBLOCK_CODE": 146})
@@ -65,7 +80,8 @@ const Form = () => {
 
         //console.log('до отправки', data)
         Axios.post('https://crm.axcap.ae/rest/1/y9x9q1wmj1mwq5bu/lists.element.add', 
-            data
+            data,
+            console.log('отправили', data)
         )
         .then(function (response){
             console.log(response);
@@ -78,6 +94,8 @@ const Form = () => {
         //console.log(data)
     };
     
+
+ 
 
     const disablePastDate = () => {
         var today,dd,mm,yyyy;
