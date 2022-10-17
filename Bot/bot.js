@@ -2,9 +2,9 @@ const {Telegraf, Markup} = require('telegraf');
 const Koa = require('koa');
 const Router = require('koa-router');
 const koaBody = require('koa-body')
-const {chatIdfromapp} = require('../src/Components/API/GetService')
+//const {chatIdfromapp} = require('../src/Components/API/GetService')
 
-console.log(chatIdfromapp)
+// console.log(chatIdfromapp)
 
 const bot = new Telegraf('5460764354:AAFJq8j0DDivRJABpBGBjYq2BJqcyg7gInc');
 bot.telegram.setWebhook(`https://edda-91-72-172-198.in.ngrok.io`)
@@ -88,6 +88,8 @@ bot.command('leaverequest', async (ctx) => {
     await ctx.reply(seackLeave, Markup.inlineKeyboard([
         [Markup.button.webApp('Open CRM', 'https://workflow.axcap.ae/')],
     ]))
+    const leavefromuser = ctx.update.message.from.id;
+    console.log('ID на leave', leavefromuser)
 })
 
 
@@ -144,7 +146,6 @@ bot.use(function(ctx, next){
         //console.log(ctx.update.callback_query.message.from.id)
         
         next();
-        
         //bot.telegram.sendMessage(5591115278, 'hey');
         let call_data;
 
@@ -165,7 +166,7 @@ bot.use(function(ctx, next){
         if(call_data[2] !== '0'){
             ctx.editMessageReplyMarkup();
             ctx.editMessageText(ed_text + '\nLeave request has been accepted 🟢🟢🟢')
-            ctx.reply = bot.telegram.sendMessage(5591115278, `\nYour leave has been accepted`)
+            ctx.reply = bot.telegram.sendMessage(chatIdTelegram, `\nYour leave has been accepted`)
         }else if(call_data[2] !== '1'){
             ctx.editMessageReplyMarkup();
             ctx.editMessageText(ed_text + '\nleave request has been rejected 🛑🛑🛑')

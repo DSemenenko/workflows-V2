@@ -37,6 +37,10 @@ const Form = () => {
     const[notify, setNotify] = useState('');
 
     const onSubmit = data => {
+
+        const tele_id = window.Telegram.WebApp;
+        const chatIdTelegram = tele_id.initDataUnsafe.user.id;
+        console.log('Telegram ID из сабмит.......', chatIdTelegram); 
         
         Object.assign(data, {"IBLOCK_ID": 146})
         //Object.assign(data, {"IBLOCK_CODE": 146})
