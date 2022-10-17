@@ -2,11 +2,14 @@ const {Telegraf, Markup} = require('telegraf');
 const Koa = require('koa');
 const Router = require('koa-router');
 const koaBody = require('koa-body')
+const {chatIdfromapp} = require('../src/Components/API/GetService')
 
+console.log(chatIdfromapp)
 
 const bot = new Telegraf('5460764354:AAFJq8j0DDivRJABpBGBjYq2BJqcyg7gInc');
 bot.telegram.setWebhook(`https://edda-91-72-172-198.in.ngrok.io`)
 bot.startWebhook(`/`, null, 3000);
+
 
 const app = new Koa()
 app.use(koaBody())
@@ -123,7 +126,7 @@ bot.use(function(ctx, next){
 
         // let data;
         // let message_id;
-
+    
         // if(ctx.message.message_id !== undefined){
         //     message_id = ctx.message.message_id
         // }
@@ -137,26 +140,35 @@ bot.use(function(ctx, next){
         //     console.log('empty')
         // }
 
-        console.log(ctx.update.callback_query.message.reply_markup)
+        //console.log(ctx.update.callback_query.message.reply_markup)
+        //console.log(ctx.update.callback_query.message.from.id)
         
         next();
         
         //bot.telegram.sendMessage(5591115278, 'hey');
         let call_data;
 
+        //получаем и разделяем данные 
         if (ctx.update.callback_query !== undefined) {
             call_data = ctx.update.callback_query.data.split(':');
         } else {
             return
         }
-        console.log('тесты', call_data[2]); 
+        //console.log('тесты', call_data[2]); 
+
+        //console.log('Маркааааап', ctx.update.callback_query.message.text)
+        const ed_mess = ctx.update.callback_query.message.from.id
+        const ed_text = ctx.update.callback_query.message.text
+
+        console.log(ctx.update)
 
         if(call_data[2] !== '0'){
             ctx.editMessageReplyMarkup();
-            ctx.editMessageText(ctx.update.callback_query.message.text + '\nLeave request has been accepted 🟢🟢🟢')
+            ctx.editMessageText(ed_text + '\nLeave request has been accepted 🟢🟢🟢')
+            ctx.reply = bot.telegram.sendMessage(5591115278, `\nYour leave has been accepted`)
         }else if(call_data[2] !== '1'){
             ctx.editMessageReplyMarkup();
-            ctx.editMessageText(ctx.update.callback_query.message.text + '\nleave request has been rejected 🛑🛑🛑')
+            ctx.editMessageText(ed_text + '\nleave request has been rejected 🛑🛑🛑')
         }else{
             return;
         }
